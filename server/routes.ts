@@ -6,16 +6,26 @@ import { URL } from "url";
 import { auditRequestSchema, type AuditResult, type SpeedResult, type MetaTagItem, type LinksResult, type RobotsResult, type HeadersResult, type Recommendation } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
+
+  // Root endpoint for health checks
+  app.get("/", (req, res) => {
+    res.json({
+      status: "OK",
+      message: "SEO Audit Pro API is running",
+      timestamp: new Date().toISOString(),
+      version: "1.0.0"
+    });
+  });
+
   // Health check endpoint
   app.get("/api/health", (req, res) => {
-    res.json({ 
-      status: "OK", 
+    res.json({
+      status: "OK",
       timestamp: new Date().toISOString(),
       endpoints: [
         "POST /api/audit",
         "GET /api/speed",
-        "GET /api/meta", 
+        "GET /api/meta",
         "GET /api/links",
         "GET /api/robots",
         "GET /api/headers"

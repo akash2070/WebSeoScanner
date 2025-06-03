@@ -88,11 +88,18 @@ app.use((req, res, next) => {
 
   // Use Railway's PORT environment variable in production, fallback to 5000
   const port = process.env.PORT || 5000;
+
+  server.on('error', (error: any) => {
+    console.error('Server error:', error);
+  });
+
   server.listen({
     port,
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
-    log(`serving on port ${port}`);
+    log(`🚀 SEO Audit Pro API serving on port ${port}`);
+    log(`📍 Health check: http://localhost:${port}/`);
+    log(`🔧 API endpoints: http://localhost:${port}/api/health`);
   });
 })();
