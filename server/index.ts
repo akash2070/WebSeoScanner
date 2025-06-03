@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { config } from "dotenv";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { log, serveStatic } from "./vite-prod";
 
 // Load environment variables
 config();
@@ -85,6 +85,8 @@ app.use((req, res, next) => {
     // doesn't interfere with the other routes
     if (process.env.NODE_ENV === "development") {
       console.log('🔧 Setting up Vite for development...');
+      // Dynamically import Vite only in development
+      const { setupVite } = await import("./vite");
       await setupVite(app, server);
     } else {
       console.log('📦 Setting up static file serving for production...');
