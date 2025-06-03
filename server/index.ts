@@ -67,39 +67,51 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    console.log('🔄 Starting server initialization...');
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    const server = await registerRoutes(app);
+    console.log('✅ Routes registered successfully');
 
-    res.status(status).json({ message });
-    throw err;
-  });
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+      console.error('Express error:', err);
+      res.status(status).json({ message });
+    });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
+    // importantly only setup vite in development and after
+    // setting up all the other routes so the catch-all route
+    // doesn't interfere with the other routes
+    if (process.env.NODE_ENV === "development") {
+      console.log('🔧 Setting up Vite for development...');
+      await setupVite(app, server);
+    } else {
+      console.log('📦 Setting up static file serving for production...');
+      serveStatic(app);
+    }
+
+    // Use Railway's PORT environment variable in production, fallback to 5000
+    const port = parseInt(process.env.PORT || '5000', 10);
+    console.log(`🌐 Attempting to start server on port ${port}...`);
+
+    server.on('error', (error: any) => {
+      console.error('❌ Server error:', error);
+      process.exit(1);
+    });
+
+    server.listen(port, "0.0.0.0", () => {
+      console.log(`🚀 SEO Audit Pro API serving on port ${port}`);
+      console.log(`📍 Health check: http://0.0.0.0:${port}/`);
+      console.log(`🔧 API endpoints: http://0.0.0.0:${port}/api/health`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
   }
-
-  // Use Railway's PORT environment variable in production, fallback to 5000
-  const port = process.env.PORT || 5000;
-
-  server.on('error', (error: any) => {
-    console.error('Server error:', error);
-  });
-
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`🚀 SEO Audit Pro API serving on port ${port}`);
-    log(`📍 Health check: http://localhost:${port}/`);
-    log(`🔧 API endpoints: http://localhost:${port}/api/health`);
-  });
-})();
+})().catch((error) => {
+  console.error('❌ Unhandled startup error:', error);
+  process.exit(1);
+});
