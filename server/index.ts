@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { config } from "dotenv";
-import { registerRoutes } from "./routes.js";
-import { log, serveStatic } from "./vite-prod.js";
+import { registerRoutes } from "./routes";
+import { log, serveStatic } from "./vite-prod";
 
 // Load environment variables
 config();
@@ -87,7 +87,7 @@ app.use((req, res, next) => {
       console.log('🔧 Setting up Vite for development...');
       try {
         // Dynamically import Vite only in development
-        const viteModule = await import("./vite.js");
+        const viteModule = await import("./vite");
         await viteModule.setupVite(app, server);
       } catch (error) {
         console.warn('Vite setup failed, falling back to static serving:', error);

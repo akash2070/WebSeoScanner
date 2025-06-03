@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { URL } from "url";
-import { auditRequestSchema, type AuditResult, type SpeedResult, type MetaTagItem, type LinksResult, type RobotsResult, type HeadersResult, type Recommendation } from "../shared/schema.js";
+import { auditRequestSchema, type AuditResult, type SpeedResult, type MetaTagItem, type LinksResult, type RobotsResult, type HeadersResult, type Recommendation } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
 
