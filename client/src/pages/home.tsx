@@ -4,6 +4,7 @@ import LoadingSpinner from "@/components/loading-spinner";
 import ResultsDisplay from "@/components/results-display";
 import FeatureGrid from "@/components/feature-grid";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE } from "@/lib/api";
 import type { AuditResult } from "@shared/schema";
 
 export default function Home() {
@@ -16,7 +17,7 @@ export default function Home() {
     setAuditResults(null);
 
     try {
-      const response = await fetch('/api/audit', {
+      const response = await fetch(`${API_BASE}/api/audit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +52,7 @@ export default function Home() {
 
   const testBackend = async () => {
     try {
-      const response = await fetch('/api/health');
+      const response = await fetch(`${API_BASE}/api/health`);
       const data = await response.json();
       toast({
         title: "Backend Status",
